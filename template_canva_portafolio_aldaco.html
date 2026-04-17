@@ -1,0 +1,950 @@
+
+<style>
+  :root {
+    --cream: #F5EDE0;
+    --warm-gray: #7A7370;
+    --accent-line: #C9B99A;
+    --dark: #1C1C1C;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans, sans-serif); }
+
+  .container { padding: 0 0 2rem; }
+
+  .toolbar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 0 16px; flex-wrap: wrap;
+  }
+  .toolbar button {
+    font-size: 11px; padding: 5px 12px; border-radius: 20px;
+    background: transparent;
+    border: 0.5px solid var(--color-border-secondary);
+    color: var(--color-text-secondary);
+    cursor: pointer; transition: all .15s;
+    letter-spacing: .06em; text-transform: uppercase;
+  }
+  .toolbar button:hover { background: var(--color-background-secondary); }
+  .toolbar button.active {
+    background: var(--color-background-primary);
+    border-color: var(--color-border-primary);
+    color: var(--color-text-primary);
+  }
+  .toolbar-label {
+    font-size: 10px; color: var(--color-text-tertiary);
+    letter-spacing: .1em; text-transform: uppercase;
+    margin-right: 4px;
+  }
+
+  .slide-nav {
+    display: flex; gap: 6px; align-items: center; margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .slide-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--color-border-tertiary);
+    cursor: pointer; transition: all .15s; flex-shrink: 0;
+  }
+  .slide-dot:hover { background: var(--color-border-primary); }
+  .slide-dot.active { background: var(--color-text-primary); transform: scale(1.3); }
+  .slide-counter {
+    font-size: 11px; color: var(--color-text-tertiary);
+    letter-spacing: .06em; margin-left: 8px;
+  }
+
+  .slide-panel {
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+
+  .slide-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--color-background-secondary);
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+  .slide-number {
+    font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--color-text-tertiary);
+  }
+  .slide-type {
+    font-size: 10px; padding: 2px 8px; border-radius: 10px;
+    border: 0.5px solid var(--color-border-tertiary);
+    color: var(--color-text-secondary);
+  }
+  .badge-portada { background: #F0EAE0; color: #8A6A4A; border-color: #D4B896; }
+  .badge-perfil  { background: #EAF0E8; color: #4A7A45; border-color: #9DC499; }
+  .badge-proyecto{ background: #E8EEF5; color: #3A5A80; border-color: #88AACC; }
+  .badge-render  { background: #F5EBE8; color: #804040; border-color: #CC8888; }
+  .badge-tecnica { background: #F0EAF5; color: #604880; border-color: #AA88CC; }
+  .badge-cierre  { background: #F0EDE0; color: #706030; border-color: #BBA860; }
+
+  .slide-body { padding: 14px 16px; }
+
+  .slide-canvas {
+    width: 100%; aspect-ratio: 1260/952;
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: 6px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    position: relative;
+    background: var(--color-background-primary);
+  }
+
+  .section-label {
+    font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--color-text-tertiary); margin-bottom: 6px; margin-top: 12px;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  .spec-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    margin-bottom: 12px;
+  }
+  .spec-item {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 8px 10px;
+  }
+  .spec-key { font-size: 10px; color: var(--color-text-tertiary); margin-bottom: 2px; letter-spacing: .06em; text-transform: uppercase; }
+  .spec-val { font-size: 12px; color: var(--color-text-primary); }
+
+  .text-block {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+  .text-role { font-size: 10px; color: var(--color-text-tertiary); margin-bottom: 3px; letter-spacing: .06em; text-transform: uppercase; }
+  .text-content { font-size: 12px; color: var(--color-text-primary); line-height: 1.6; }
+  .text-content em { color: var(--color-text-secondary); font-style: normal; }
+
+  .instruction-block {
+    border-left: 2px solid var(--color-border-secondary);
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+
+  .copy-row {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 8px 10px; margin-bottom: 6px;
+    cursor: pointer; transition: all .15s;
+  }
+  .copy-row:hover { background: var(--color-background-tertiary); }
+  .copy-icon { font-size: 12px; color: var(--color-text-tertiary); flex-shrink: 0; }
+  .copy-text { font-size: 11px; color: var(--color-text-primary); flex: 1; line-height: 1.5; }
+  .copy-hint { font-size: 10px; color: var(--color-text-tertiary); flex-shrink: 0; }
+
+  .sys-section {
+    display: none;
+    padding: 0 0 1rem;
+  }
+  .sys-section.visible { display: block; }
+
+  .nav-arrows {
+    display: flex; gap: 8px; align-items: center;
+    margin-top: 8px;
+  }
+  .nav-btn {
+    padding: 6px 16px; font-size: 12px;
+    background: transparent;
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: var(--border-radius-md);
+    cursor: pointer; color: var(--color-text-secondary);
+    transition: all .15s;
+  }
+  .nav-btn:hover:not(:disabled) { background: var(--color-background-secondary); color: var(--color-text-primary); }
+  .nav-btn:disabled { opacity: .3; cursor: default; }
+
+  @media (prefers-color-scheme: dark) {
+    .badge-portada { background: #2A2018; color: #D4B080; border-color: #6A5030; }
+    .badge-perfil  { background: #182018; color: #80C478; border-color: #305030; }
+    .badge-proyecto{ background: #182030; color: #7098C8; border-color: #305060; }
+    .badge-render  { background: #281818; color: #C07070; border-color: #603030; }
+    .badge-tecnica { background: #200820; color: #A070C0; border-color: #502060; }
+    .badge-cierre  { background: #201808; color: #C0A048; border-color: #604820; }
+  }
+</style>
+
+<div class="container">
+  <h2 class="sr-only">Template Canva – Portafolio Sebastián Aldaco 2026: sistema de 18 diapositivas listo para implementar</h2>
+
+  <div class="toolbar">
+    <span class="toolbar-label">Ver</span>
+    <button class="active" onclick="setView('slides', this)">Diapositivas</button>
+    <button onclick="setView('sistema', this)">Sistema visual</button>
+    <button onclick="setView('textos', this)">Textos</button>
+    <button onclick="setView('curaduría', this)">Curaduría</button>
+  </div>
+
+  <div id="view-slides">
+    <div class="slide-nav" id="dot-nav"></div>
+    <div id="slide-display"></div>
+    <div class="nav-arrows">
+      <button class="nav-btn" id="btn-prev" onclick="changeSlide(-1)">← Anterior</button>
+      <button class="nav-btn" id="btn-next" onclick="changeSlide(1)">Siguiente →</button>
+    </div>
+  </div>
+
+  <div id="view-sistema" class="sys-section">
+    <div class="section-label">Tipografía</div>
+    <div class="spec-grid">
+      <div class="spec-item"><div class="spec-key">Títulos</div><div class="spec-val">Cormorant Garamond Light · 52–60pt · tracking +40</div></div>
+      <div class="spec-item"><div class="spec-key">Subtítulos / Numeración</div><div class="spec-val">Montserrat ExtraLight · 14pt · tracking +120 · uppercase</div></div>
+      <div class="spec-item"><div class="spec-key">Cuerpo de texto</div><div class="spec-val">Cormorant Garamond Regular Italic · 11pt · interlinea 1.8</div></div>
+      <div class="spec-item"><div class="spec-key">Captions / info técnica</div><div class="spec-val">Montserrat Light · 8pt · tracking +80 · uppercase</div></div>
+    </div>
+    <div class="section-label">Paleta cromática</div>
+    <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+      <div style="flex:1;min-width:80px;padding:10px;border-radius:8px;background:#FFFFFF;border:0.5px solid #E0E0E0;text-align:center;font-size:10px;color:#888">Blanco<br>#FFFFFF</div>
+      <div style="flex:1;min-width:80px;padding:10px;border-radius:8px;background:#F5EDE0;border:0.5px solid #E0D0C0;text-align:center;font-size:10px;color:#8A6A4A">Crema arena<br>#F5EDE0</div>
+      <div style="flex:1;min-width:80px;padding:10px;border-radius:8px;background:#1C1C1C;text-align:center;font-size:10px;color:#AAA">Texto<br>#1C1C1C</div>
+      <div style="flex:1;min-width:80px;padding:10px;border-radius:8px;background:#7A7370;text-align:center;font-size:10px;color:#EEE">Secundario<br>#7A7370</div>
+      <div style="flex:1;min-width:80px;padding:10px;border-radius:8px;background:#C9B99A;text-align:center;font-size:10px;color:#5A4A30">Líneas<br>#C9B99A</div>
+    </div>
+    <div class="section-label">Retícula</div>
+    <div class="instruction-block">Formato: 1260 × 952 px (horizontal, landscape) — Márgenes: 72px todos los lados — Canaleta: 32px entre columnas — Columna de texto: 38% del ancho — Columna de imagen: 57% del ancho</div>
+    <div class="section-label">Dimensiones en Canva</div>
+    <div class="instruction-block">Crear presentación personalizada: 1260 × 952 px → o usar Presentación estándar (1280 × 720) ajustando márgenes a 56px. El sistema funciona en ambos formatos.</div>
+    <div class="section-label">Reglas de espaciado</div>
+    <div class="instruction-block">
+      Nunca colocar texto a menos de 72px del borde.<br>
+      El espacio en blanco no es vacío: es margen conceptual.<br>
+      Una sola imagen grande > tres imágenes pequeñas.<br>
+      Si hay duda entre dos opciones: elegir la más silenciosa.
+    </div>
+  </div>
+
+  <div id="view-textos" class="sys-section">
+    <div class="section-label">Perfil profesional — texto depurado</div>
+    <div class="copy-row" onclick="copyText(this, 'Diseño espacios que responden al lugar antes de responder al gusto. Me interesa la materialidad honesta, la luz como decisión de proyecto y la escala humana como punto de partida.')">
+      <span class="copy-icon">¶</span>
+      <span class="copy-text">Diseño espacios que responden al lugar antes de responder al gusto. Me interesa la materialidad honesta, la luz como decisión de proyecto y la escala humana como punto de partida.</span>
+      <span class="copy-hint">copiar</span>
+    </div>
+    <div class="copy-row" onclick="copyText(this, 'Trabajo en la costa del Pacífico mexicano, donde el clima, la topografía y la herencia constructiva local definen los límites dentro de los cuales aparece el diseño.')">
+      <span class="copy-icon">¶</span>
+      <span class="copy-text">Trabajo en la costa del Pacífico mexicano, donde el clima, la topografía y la herencia constructiva local definen los límites dentro de los cuales aparece el diseño.</span>
+      <span class="copy-hint">copiar</span>
+    </div>
+    <div class="section-label">Frases rectoras</div>
+    <div class="copy-row" onclick="copyText(this, '\"Cada proyecto empieza por entender el lugar. Lo demás es consecuencia.\"')">
+      <span class="copy-icon">"</span>
+      <span class="copy-text">"Cada proyecto empieza por entender el lugar. Lo demás es consecuencia."</span>
+      <span class="copy-hint">copiar</span>
+    </div>
+    <div class="copy-row" onclick="copyText(this, '\"No busco un estilo. Busco la respuesta correcta para cada proyecto.\"')">
+      <span class="copy-icon">"</span>
+      <span class="copy-text">"No busco un estilo. Busco la respuesta correcta para cada proyecto."</span>
+      <span class="copy-hint">copiar</span>
+    </div>
+    <div class="copy-row" onclick="copyText(this, '\"El lujo verdadero no se anuncia. Se descubre despacio.\"')">
+      <span class="copy-icon">"</span>
+      <span class="copy-text">"El lujo verdadero no se anuncia. Se descubre despacio."</span>
+      <span class="copy-hint">copiar</span>
+    </div>
+    <div class="section-label">Sierra Guest House — descripción editorial</div>
+    <div class="copy-row" onclick="copyText(this, 'La Sierra Guest House se construye desde la topografía, no contra ella. Tres niveles de vida organizados como ascenso: el sótano para los servicios, el primer nivel para la vida cotidiana, la planta alta para el descanso frente al Pacífico.')">
+      <span class="copy-icon">¶</span>
+      <span class="copy-text">La Sierra Guest House se construye desde la topografía, no contra ella. Tres niveles de vida organizados como ascenso: el sótano para los servicios, el primer nivel para la vida cotidiana, la planta alta para el descanso frente al Pacífico.</span>
+      <span class="copy-hint">copiar</span>
+    </div>
+    <div class="copy-row" onclick="copyText(this, 'La materialidad responde al lugar: trabes de madera, teja a varias aguas, piedra local, celosías de madera. No es nostalgia regional; es la respuesta constructiva más honesta para este clima y este paisaje.')">
+      <span class="copy-icon">¶</span>
+      <span class="copy-text">La materialidad responde al lugar: trabes de madera, teja a varias aguas, piedra local, celosías de madera. No es nostalgia regional; es la respuesta constructiva más honesta para este clima y este paisaje.</span>
+      <span class="copy-hint">copiar</span>
+    </div>
+    <div class="section-label">Río Fuerte — descripción editorial</div>
+    <div class="copy-row" onclick="copyText(this, 'Una intervención de interiores con una premisa precisa: redefinir cocina y baño sin renunciar a la elegancia. La oscuridad de las maderas cálidas como base sensorial; el mármol y el cristal como tensión luminosa sobre esa base.')">
+      <span class="copy-icon">¶</span>
+      <span class="copy-text">Una intervención de interiores con una premisa precisa: redefinir cocina y baño sin renunciar a la elegancia. La oscuridad de las maderas cálidas como base sensorial; el mármol y el cristal como tensión luminosa sobre esa base.</span>
+      <span class="copy-hint">copiar</span>
+    </div>
+    <div class="copy-row" onclick="copyText(this, 'Cada superficie fue elegida por lo que revela, no por lo que decora.')">
+      <span class="copy-icon">¶</span>
+      <span class="copy-text">Cada superficie fue elegida por lo que revela, no por lo que decora.</span>
+      <span class="copy-hint">copiar</span>
+    </div>
+    <div class="section-label">Villas Altas — descripción editorial</div>
+    <div class="copy-row" onclick="copyText(this, 'A la altura de Garza Blanca, donde el mar se extiende como telón de fondo permanente, esta cocina encuentra su carácter en la calma. El mármol y las maderas construyen una paleta orgánica que no compite con el paisaje sino que lo enmarca.')">
+      <span class="copy-icon">¶</span>
+      <span class="copy-text">A la altura de Garza Blanca, donde el mar se extiende como telón de fondo permanente, esta cocina encuentra su carácter en la calma. El mármol y las maderas construyen una paleta orgánica que no compite con el paisaje sino que lo enmarca.</span>
+      <span class="copy-hint">copiar</span>
+    </div>
+    <div class="copy-row" onclick="copyText(this, 'El domo de ladrillo rojo visto es el gesto que da identidad al espacio: luz cenital que organiza desde arriba, convirtiendo el corazón de la cocina en una apertura casi sagrada. Contraste entre la calidez táctil y la claridad del mármol — no es tensión, es conversación.')">
+      <span class="copy-icon">¶</span>
+      <span class="copy-text">El domo de ladrillo rojo visto es el gesto que da identidad al espacio: luz cenital que organiza desde arriba, convirtiendo el corazón de la cocina en una apertura casi sagrada. Contraste entre la calidez táctil y la claridad del mármol — no es tensión, es conversación.</span>
+      <span class="copy-hint">copiar</span>
+    </div>
+  </div>
+
+  <div id="view-curaduría" class="sys-section">
+    <div class="section-label">Criterios de selección de renders</div>
+    <div class="instruction-block">
+      <strong style="color:var(--color-text-primary)">Sí incluir:</strong><br>
+      · Luz natural visible — ventanas, entradas de sol, sombras definidas<br>
+      · Al menos un material claramente legible (madera, piedra, mármol, teja)<br>
+      · Espacio vacío dentro del encuadre: el render no debe estar "lleno"<br>
+      · Figuras humanas discreta o ausentes — nunca protagonistas<br>
+      · Ángulos que muestren relación entre materiales
+    </div>
+    <div class="instruction-block">
+      <strong style="color:var(--color-text-primary)">No incluir:</strong><br>
+      · Cielo azul sobreexpuesto (problema actual en Sierra, p.8)<br>
+      · Personas con ropa colorida que compita con el espacio<br>
+      · Vegetación ocupando más del 30% del encuadre<br>
+      · Iluminación nocturna artificial como imagen principal<br>
+      · Múltiples ángulos del mismo espacio en una misma página<br>
+      · Renders con saturación excesiva de naranja o colores tropicales
+    </div>
+    <div class="section-label">Regla de edición por proyecto</div>
+    <div class="instruction-block">
+      Si tienes 6 renders de un proyecto → usa 3.<br>
+      Pregunta antes de incluir cada imagen: ¿Esta imagen dice algo que las otras no dicen?<br>
+      Si la respuesta es no → eliminar.
+    </div>
+    <div class="section-label">Distribución por proyecto</div>
+    <div class="spec-grid">
+      <div class="spec-item"><div class="spec-key">Portada</div><div class="spec-val">1 render full bleed (el más atmosférico)</div></div>
+      <div class="spec-item"><div class="spec-key">Descripción</div><div class="spec-val">2 renders: 1 general + 1 detalle material</div></div>
+      <div class="spec-item"><div class="spec-key">Full bleed secundario</div><div class="spec-val">1 render (ángulo lateral, no frontal)</div></div>
+      <div class="spec-item"><div class="spec-key">Galería detalles</div><div class="spec-val">2 renders espacio secundario</div></div>
+    </div>
+    <div class="section-label">Sobre el Sierra Guest House específicamente</div>
+    <div class="instruction-block">
+      El render frontal actual (p.8) tiene cielo sobreexpuesto y saturación excesiva de naranja. Reemplazar por un ángulo que muestre la relación entre teja, madera y jardín con luz más cálida y controlada. El proyecto es mediterráneo-tropical honesto — los renders deben comunicarlo.
+    </div>
+    <div class="section-label">Página de software — ELIMINAR</div>
+    <div class="instruction-block">
+      La página de logos de AutoCAD, SketchUp, Photoshop y Enscape se elimina del portafolio. Esta información va en el CV, no en el portafolio. Un despacho de alto nivel asume que conoces tus herramientas. El portafolio justifica decisiones, no herramientas.
+    </div>
+  </div>
+</div>
+
+<script>
+const slides = [
+  {
+    num: "01",
+    name: "Portada",
+    type: "PORTADA",
+    badgeClass: "badge-portada",
+    images: 1,
+    layout: "Full bleed + overlay inferior",
+    canvas: drawPortada,
+    specs: [
+      ["Imágenes", "1 render full bleed — el más atmosférico del portafolio"],
+      ["Criterio imagen", "Luz natural, materialidad visible, sin figura humana protagonista"],
+      ["Overlay", "Franja oscura 20% negro, 300px de alto, sólo en zona inferior"],
+      ["Texto", "Nombre + disciplina + año en esquina inferior izquierda"],
+    ],
+    texts: [
+      ["Nombre", "SEBASTIÁN ALDACO MUÑOZ — Montserrat ExtraLight 11pt tracking +120"],
+      ["Disciplina", "Arquitectura · Interiorismo — Cormorant Light Italic 13pt"],
+      ["Datos", "Puerto Vallarta, México · 2026 — Montserrat Light 8pt tracking +80"],
+    ]
+  },
+  {
+    num: "02",
+    name: "Perfil profesional",
+    type: "PERFIL",
+    badgeClass: "badge-perfil",
+    images: 0,
+    layout: "Bloque crema izq + texto derecha",
+    canvas: drawPerfil,
+    specs: [
+      ["Imágenes", "0 — esta página no lleva imagen"],
+      ["Bloque crema", "20% del ancho, altura completa, color #F5EDE0"],
+      ["Texto", "3 párrafos breves + frase cierre en Cormorant 24pt Italic"],
+      ["Firma", "— Arq. Sebastián Aldaco Muñoz, esquina inferior derecha"],
+    ],
+    texts: [
+      ["Párrafo 1", "Diseño espacios que responden al lugar antes de responder al gusto..."],
+      ["Párrafo 2", "Trabajo en la costa del Pacífico mexicano..."],
+      ["Frase cierre", '"Cada proyecto empieza por entender el lugar. Lo demás es consecuencia."'],
+    ]
+  },
+  {
+    num: "03",
+    name: "Índice editorial",
+    type: "ÍNDICE",
+    badgeClass: "badge-perfil",
+    images: 0,
+    layout: "Lista tipográfica, sin imágenes",
+    canvas: drawIndice,
+    specs: [
+      ["Imágenes", "0 — lista editorial pura"],
+      ["Cabeza", "PROYECTOS — Montserrat ExtraLight 11pt tracking +150"],
+      ["Línea", "0.5pt color #C9B99A, ancho 300px"],
+      ["Numeración", "Cormorant Light 36pt, color #C9B99A"],
+      ["Nombre proyecto", "Montserrat Light 13pt tracking +60, uppercase"],
+      ["Subtexto", "Cormorant Light Italic 11pt, color #7A7370"],
+    ],
+    texts: [
+      ["01", "SIERRA GUEST HOUSE / Residencial Sierra del Mar / Puerto Vallarta"],
+      ["02", "RÍO FUERTE / Fluvial Vallarta / Puerto Vallarta"],
+      ["03", "VILLAS ALTAS / Garza Blanca / Puerto Vallarta"],
+      ["04", "DEL CANTO CONDOMINIUM / Delcanto Residences / Nuevo Vallarta"],
+    ]
+  },
+  {
+    num: "04",
+    name: "Portada — Sierra Guest House",
+    type: "PORTADA PROYECTO",
+    badgeClass: "badge-proyecto",
+    images: 1,
+    layout: "Full bleed + etiqueta superior izquierda",
+    canvas: (ctx, w, h) => drawPortadaProyecto(ctx, w, h, "01", "SIERRA GUEST HOUSE", "Residencial Sierra del Mar · Puerto Vallarta, Jalisco", "#D05538"),
+    specs: [
+      ["Imágenes", "1 render full bleed — más atmosférico, no el más técnico"],
+      ["Etiqueta", "Esquina superior izquierda: número + nombre + ubicación"],
+      ["Criterio render", "Ángulo que capture relación entre teja, madera y jardín"],
+    ],
+    texts: [
+      ["Número", "01 — Cormorant Light 18pt, color #7A7370"],
+      ["Nombre", "SIERRA GUEST HOUSE — Montserrat Light 14pt tracking +80"],
+      ["Ubicación", "Residencial Sierra del Mar · Puerto Vallarta — Cormorant Italic 10pt"],
+    ]
+  },
+  {
+    num: "05",
+    name: "Descripción — Sierra",
+    type: "DESCRIPCIÓN",
+    badgeClass: "badge-proyecto",
+    images: 2,
+    layout: "Texto izquierda + 2 renders columna derecha",
+    canvas: (ctx, w, h) => drawDescripcion(ctx, w, h, "#D05538"),
+    specs: [
+      ["Imágenes", "2 renders — 1 general (ángulo exterior) + 1 detalle material"],
+      ["Columna texto", "38% del ancho izquierdo, 3 párrafos máximo"],
+      ["Columna imagen", "57% del ancho derecho, 2 renders apilados verticalmente"],
+      ["Proporción renders", "4:3 cada uno, con gap de 12px entre ellos"],
+    ],
+    texts: [
+      ["Párrafo 1", "La Sierra Guest House se construye desde la topografía, no contra ella..."],
+      ["Párrafo 2", "La materialidad responde al lugar: trabes de madera, teja a varias aguas..."],
+    ]
+  },
+  {
+    num: "06",
+    name: "Render full bleed — Sierra",
+    type: "RENDER PRINCIPAL",
+    badgeClass: "badge-render",
+    images: 1,
+    layout: "Full bleed sin texto",
+    canvas: (ctx, w, h) => drawFullBleed(ctx, w, h, "#C04828"),
+    specs: [
+      ["Imágenes", "1 render — ángulo lateral, no frontal. El más potente del proyecto."],
+      ["Texto", "Ninguno. O caption mínimo en esquina inferior derecha."],
+      ["Caption opcional", "Sierra Guest House · Vista exterior — Montserrat 7pt"],
+      ["Función", "Respiro visual entre descripción y técnica"],
+    ],
+    texts: []
+  },
+  {
+    num: "07",
+    name: "Técnica — Sierra",
+    type: "TÉCNICA",
+    badgeClass: "badge-tecnica",
+    images: 4,
+    layout: "3 plantas en fila superior + axonométrica inferior derecha",
+    canvas: (ctx, w, h) => drawTecnica(ctx, w, h),
+    specs: [
+      ["Imágenes", "3 plantas técnicas en fila + 1 axonométrica = 4 elementos"],
+      ["Plantas", "Fila superior: Basement · First Level · Second Level"],
+      ["Axonométrica", "Zona inferior derecha, centrada, fondo crema"],
+      ["Frase", "Zona inferior izquierda, Cormorant 22pt"],
+    ],
+    texts: [
+      ["Frase", '"No busco un estilo. Busco la respuesta correcta para cada proyecto."'],
+      ["Caption planos", "se enfatiza la secuencia vertical como experiencia narrativa del ascenso..."],
+    ]
+  },
+  {
+    num: "08",
+    name: "Portada — Río Fuerte",
+    type: "PORTADA PROYECTO",
+    badgeClass: "badge-proyecto",
+    images: 1,
+    layout: "Full bleed + etiqueta superior izquierda",
+    canvas: (ctx, w, h) => drawPortadaProyecto(ctx, w, h, "02", "RÍO FUERTE", "Fluvial Vallarta · Puerto Vallarta, Jalisco", "#3A5A80"),
+    specs: [
+      ["Imágenes", "1 render full bleed — cocina con luz lateral y madera visible"],
+      ["Criterio", "Espacio que comunique austeridad refinada: madera oscura + mármol blanco"],
+    ],
+    texts: [
+      ["Número", "02 — Cormorant Light 18pt, color #7A7370"],
+      ["Nombre", "RÍO FUERTE — Montserrat Light 14pt tracking +80"],
+      ["Ubicación", "Fluvial Vallarta · Puerto Vallarta — Cormorant Italic 10pt"],
+    ]
+  },
+  {
+    num: "09",
+    name: "Descripción — Río Fuerte",
+    type: "DESCRIPCIÓN",
+    badgeClass: "badge-proyecto",
+    images: 2,
+    layout: "Texto izquierda + 2 renders columna derecha",
+    canvas: (ctx, w, h) => drawDescripcion(ctx, w, h, "#3A5A80"),
+    specs: [
+      ["Imágenes", "2 renders — 1 vista general cocina + 1 detalle isla o mármol"],
+      ["Texto", "Máximo 3 párrafos. Lenguaje sensorial, no técnico."],
+    ],
+    texts: [
+      ["Párrafo 1", "Una intervención de interiores con una premisa precisa: redefinir cocina y baño..."],
+      ["Párrafo 2", "Cada superficie fue elegida por lo que revela, no por lo que decora."],
+    ]
+  },
+  {
+    num: "10",
+    name: "Galería detalles — Río Fuerte",
+    type: "GALERÍA",
+    badgeClass: "badge-render",
+    images: 2,
+    layout: "2 renders apilados verticales, centrados con margen",
+    canvas: (ctx, w, h) => drawGaleria(ctx, w, h, "#3A5A80"),
+    specs: [
+      ["Imágenes", "2 renders: closet/baño o detalles constructivos"],
+      ["Distribución", "Centradas al 70% del ancho, con margen lateral"],
+      ["Texto", "Ninguno o caption mínimo de 1 línea por imagen"],
+    ],
+    texts: []
+  },
+  {
+    num: "11",
+    name: "Cierre — Río Fuerte",
+    type: "CIERRE PROYECTO",
+    badgeClass: "badge-cierre",
+    images: 1,
+    layout: "Bloque crema izq + frase + elemento técnico",
+    canvas: (ctx, w, h) => drawCierreProy(ctx, w, h),
+    specs: [
+      ["Imágenes", "1 elemento técnico (planta de baño o sección de detalle)"],
+      ["Frase", "Cormorant Light 26pt, zona central izquierda"],
+      ["Bloque crema", "25% ancho izquierdo, desde borde superior"],
+      ["Caption", "1–2 líneas descriptivas en Cormorant Italic 10pt"],
+    ],
+    texts: [
+      ["Frase", '"El lujo verdadero no se anuncia. Se descubre despacio."'],
+      ["Caption", "El resultado es un interior contenido pero presente, donde el lujo no se anuncia sino que se siente..."],
+    ]
+  },
+  {
+    num: "12",
+    name: "Portada — Villas Altas",
+    type: "PORTADA PROYECTO",
+    badgeClass: "badge-proyecto",
+    images: 1,
+    layout: "Full bleed + etiqueta superior izquierda",
+    canvas: (ctx, w, h) => drawPortadaProyecto(ctx, w, h, "03", "VILLAS ALTAS", "Garza Blanca · Puerto Vallarta, Jalisco", "#7A5A30"),
+    specs: [
+      ["Imágenes", "1 render full bleed — cocina con domo y luz cenital"],
+      ["Criterio", "Render que muestre relación ladrillo-mármol y luz del domo"],
+    ],
+    texts: [
+      ["Número", "03 — Cormorant Light 18pt, color #7A7370"],
+      ["Nombre", "VILLAS ALTAS — Montserrat Light 14pt tracking +80"],
+    ]
+  },
+  {
+    num: "13",
+    name: "Descripción — Villas Altas",
+    type: "DESCRIPCIÓN",
+    badgeClass: "badge-proyecto",
+    images: 2,
+    layout: "Texto izquierda + 2 renders columna derecha",
+    canvas: (ctx, w, h) => drawDescripcion(ctx, w, h, "#7A5A30"),
+    specs: [
+      ["Imágenes", "2 de los 3 renders disponibles — el más bello + el que muestra el domo"],
+      ["Texto", "Énfasis en el contraste ladrillo-mármol como gesto conceptual"],
+    ],
+    texts: [
+      ["Párrafo 1", "A la altura de Garza Blanca, esta cocina encuentra su carácter en la calma..."],
+      ["Párrafo 2", "El domo de ladrillo rojo visto es el gesto que da identidad al espacio..."],
+    ]
+  },
+  {
+    num: "14",
+    name: "Galería — Villas Altas",
+    type: "GALERÍA",
+    badgeClass: "badge-render",
+    images: 2,
+    layout: "2 renders apilados, centrados con margen",
+    canvas: (ctx, w, h) => drawGaleria(ctx, w, h, "#7A5A30"),
+    specs: [
+      ["Imágenes", "2 renders — detalles de madera, mármol o área de comedor"],
+    ],
+    texts: []
+  },
+  {
+    num: "15",
+    name: "Portada — Del Canto",
+    type: "PORTADA PROYECTO",
+    badgeClass: "badge-proyecto",
+    images: 1,
+    layout: "Full bleed + etiqueta superior izquierda",
+    canvas: (ctx, w, h) => drawPortadaProyecto(ctx, w, h, "04", "DEL CANTO CONDOMINIUM", "Delcanto Residences · Nuevo Vallarta, Nayarit", "#305050"),
+    specs: [
+      ["Imágenes", "1 render full bleed — exterior con piedra, madera y vegetación controlada"],
+    ],
+    texts: [
+      ["Número", "04 — Cormorant Light 18pt, color #7A7370"],
+      ["Nombre", "DEL CANTO CONDOMINIUM — Montserrat Light 14pt tracking +80"],
+    ]
+  },
+  {
+    num: "16",
+    name: "Descripción — Del Canto",
+    type: "DESCRIPCIÓN",
+    badgeClass: "badge-proyecto",
+    images: 2,
+    layout: "Texto izquierda + 2 renders columna derecha",
+    canvas: (ctx, w, h) => drawDescripcion(ctx, w, h, "#305050"),
+    specs: [
+      ["Imágenes", "2 renders — exterior complejo + detalle de acceso o jardín"],
+      ["Énfasis", "Relación entre piedra natural, madera y contención volumétrica"],
+    ],
+    texts: []
+  },
+  {
+    num: "17",
+    name: "Galería — Del Canto",
+    type: "GALERÍA",
+    badgeClass: "badge-render",
+    images: 2,
+    layout: "2 renders apilados verticales, centrados",
+    canvas: (ctx, w, h) => drawGaleria(ctx, w, h, "#305050"),
+    specs: [["Imágenes", "2 renders detalles constructivos o de materialidad"]],
+    texts: []
+  },
+  {
+    num: "18",
+    name: "Cierre — Datos de contacto",
+    type: "CIERRE",
+    badgeClass: "badge-cierre",
+    images: 0,
+    layout: "Página tipográfica pura",
+    canvas: drawCierre,
+    specs: [
+      ["Imágenes", "0 — página de cierre completamente tipográfica"],
+      ["Contenido", "Nombre + disciplina + email + ubicación + teléfono + año"],
+      ["Línea", "Separador fino #C9B99A, 200px, centrado"],
+    ],
+    texts: [
+      ["Nombre", "Sebastián Aldaco Muñoz — Cormorant Light 38pt"],
+      ["Disciplina", "Arquitectura · Interiorismo — Montserrat ExtraLight 10pt"],
+      ["Contacto", "email · Puerto Vallarta, Jalisco · +52 [tel]"],
+      ["Año", "2026"],
+    ]
+  }
+];
+
+let current = 0;
+
+function drawPortada(ctx, w, h) {
+  ctx.fillStyle = '#E8E0D8';
+  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = 'rgba(0,0,0,0.08)';
+  for(let i=0;i<8;i++){
+    ctx.beginPath();
+    ctx.arc(w*0.6+i*20, h*0.5+i*15, 60+i*10, 0, Math.PI*2);
+    ctx.fill();
+  }
+  ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  ctx.fillRect(0, h*0.72, w, h*0.28);
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.font = `${w*0.012}px sans-serif`;
+  ctx.letterSpacing = '0.12em';
+  ctx.fillText('SEBASTIÁN ALDACO MUÑOZ', w*0.06, h*0.82);
+  ctx.fillStyle = 'rgba(255,255,255,0.65)';
+  ctx.font = `italic ${w*0.010}px serif`;
+  ctx.fillText('Arquitectura · Interiorismo', w*0.06, h*0.88);
+  ctx.font = `${w*0.008}px sans-serif`;
+  ctx.fillText('Puerto Vallarta, México  ·  2026', w*0.06, h*0.93);
+}
+
+function drawPerfil(ctx, w, h) {
+  ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0,0,w,h);
+  ctx.fillStyle = '#F5EDE0'; ctx.fillRect(0,0,w*0.22,h);
+  ctx.fillStyle = '#1C1C1C';
+  ctx.font = `${w*0.028}px serif`;
+  ctx.fillText('Sebastián Aldaco Muñoz', w*0.27, h*0.22);
+  ctx.fillStyle = '#C9B99A';
+  ctx.fillRect(w*0.27, h*0.27, w*0.3, 0.5);
+  ctx.fillStyle = '#444';
+  ctx.font = `italic ${w*0.009}px serif`;
+  const lines = [
+    'Diseño espacios que responden al lugar antes',
+    'de responder al gusto. Me interesa la materialidad',
+    'honesta, la luz como decisión de proyecto.',
+    '',
+    'Trabajo en la costa del Pacífico mexicano,',
+    'donde el clima y la topografía local definen',
+    'los límites dentro de los cuales aparece el diseño.',
+  ];
+  lines.forEach((l, i) => ctx.fillText(l, w*0.27, h*0.38 + i*h*0.065));
+  ctx.fillStyle = '#1C1C1C';
+  ctx.font = `italic ${w*0.016}px serif`;
+  ctx.fillText('"Cada proyecto empieza por', w*0.27, h*0.76);
+  ctx.fillText('entender el lugar."', w*0.27, h*0.83);
+}
+
+function drawIndice(ctx, w, h) {
+  ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0,0,w,h);
+  ctx.fillStyle = '#888'; ctx.font = `${w*0.008}px sans-serif`;
+  ctx.fillText('PROYECTOS', w*0.08, h*0.18);
+  ctx.fillStyle = '#C9B99A'; ctx.fillRect(w*0.08, h*0.22, w*0.25, 0.5);
+  const proyectos = [
+    ['01','SIERRA GUEST HOUSE','Residencial Sierra del Mar · Puerto Vallarta'],
+    ['02','RÍO FUERTE','Fluvial Vallarta · Puerto Vallarta'],
+    ['03','VILLAS ALTAS','Garza Blanca · Puerto Vallarta'],
+    ['04','DEL CANTO CONDOMINIUM','Delcanto Residences · Nuevo Vallarta'],
+  ];
+  proyectos.forEach(([n, name, sub], i) => {
+    const y = h*0.34 + i*h*0.155;
+    ctx.fillStyle = '#C9B99A'; ctx.font = `${w*0.028}px serif`;
+    ctx.fillText(n, w*0.08, y);
+    ctx.fillStyle = '#1C1C1C'; ctx.font = `${w*0.011}px sans-serif`;
+    ctx.fillText(name, w*0.19, y);
+    ctx.fillStyle = '#7A7370'; ctx.font = `italic ${w*0.008}px serif`;
+    ctx.fillText(sub, w*0.19, y+h*0.04);
+  });
+}
+
+function drawPortadaProyecto(ctx, w, h, num, name, sub, color) {
+  ctx.fillStyle = '#D8D0C8'; ctx.fillRect(0,0,w,h);
+  ctx.fillStyle = color+'30';
+  ctx.fillRect(0, 0, w, h);
+  for(let i=0;i<5;i++){
+    ctx.fillStyle = `rgba(0,0,0,0.04)`;
+    ctx.fillRect(w*0.2*i, 0, w*0.19, h);
+  }
+  ctx.fillStyle = '#1C1C1C';
+  ctx.font = `${w*0.013}px sans-serif`;
+  ctx.fillText(num, w*0.06, h*0.13);
+  ctx.font = `${w*0.011}px sans-serif`;
+  ctx.fillText(name, w*0.11, h*0.13);
+  ctx.fillStyle = '#7A7370';
+  ctx.font = `italic ${w*0.008}px serif`;
+  ctx.fillText(sub, w*0.11, h*0.18);
+}
+
+function drawDescripcion(ctx, w, h, color) {
+  ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0,0,w,h);
+  ctx.fillStyle = '#EEE';
+  ctx.fillRect(w*0.55, h*0.05, w*0.40, h*0.43);
+  ctx.fillRect(w*0.55, h*0.52, w*0.40, h*0.43);
+  ctx.fillStyle = color+'80';
+  ctx.fillRect(w*0.55, h*0.05, w*0.40, h*0.43);
+  ctx.fillStyle = color+'50';
+  ctx.fillRect(w*0.55, h*0.52, w*0.40, h*0.43);
+  ctx.fillStyle = '#666';
+  ctx.font = `italic ${w*0.008}px serif`;
+  const ls = ['Texto narrativo del proyecto.', '', 'Máximo 3 párrafos.', 'Lenguaje sensorial,', 'no técnico.', '', 'Cormorant Italic 11pt.', 'Interlinea 1.8.'];
+  ls.forEach((l,i) => ctx.fillText(l, w*0.07, h*0.22 + i*h*0.066));
+  ctx.fillStyle = '#AAA'; ctx.font = `${w*0.008}px sans-serif`;
+  ctx.fillText('[RENDER 1 — ÁNGULO GENERAL]', w*0.60, h*0.28);
+  ctx.fillText('[RENDER 2 — DETALLE MATERIAL]', w*0.60, h*0.75);
+}
+
+function drawFullBleed(ctx, w, h, color) {
+  ctx.fillStyle = '#C8C0B8'; ctx.fillRect(0,0,w,h);
+  ctx.fillStyle = color+'25'; ctx.fillRect(0,0,w,h);
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.fillRect(0,0,w,h);
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = `${w*0.025}px sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText('[RENDER FULL BLEED — ÁNGULO LATERAL]', w/2, h/2);
+  ctx.font = `${w*0.008}px sans-serif`;
+  ctx.fillText('Sin texto. Respiro visual entre páginas.', w/2, h/2+h*0.07);
+  ctx.textAlign = 'left';
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = `${w*0.007}px sans-serif`;
+  ctx.fillText('Nombre proyecto · Vista exterior', w*0.85, h*0.95);
+}
+
+function drawTecnica(ctx, w, h) {
+  ctx.fillStyle = '#FAFAF8'; ctx.fillRect(0,0,w,h);
+  const pw = w*0.27, ph = h*0.38;
+  [0.04, 0.36, 0.68].forEach((x, i) => {
+    ctx.fillStyle = '#E8E4E0'; ctx.fillRect(w*x, h*0.04, pw, ph);
+    ctx.fillStyle = '#888'; ctx.font = `${w*0.007}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(['BASEMENT','FIRST LEVEL','SECOND LEVEL'][i], w*x+pw/2, h*0.04+ph+h*0.04);
+  });
+  ctx.fillStyle = '#F5EDE0';
+  ctx.fillRect(w*0.52, h*0.52, w*0.44, h*0.44);
+  ctx.fillStyle = '#CCC'; ctx.fillRect(w*0.56, h*0.55, w*0.36, h*0.38);
+  ctx.fillStyle = '#888'; ctx.font = `${w*0.008}px sans-serif`;
+  ctx.fillText('[AXONOMÉTRICA]', w*0.52+w*0.22, h*0.74);
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#1C1C1C'; ctx.font = `italic ${w*0.014}px serif`;
+  ctx.fillText('"No busco un estilo.', w*0.05, h*0.62);
+  ctx.fillText('Busco la respuesta', w*0.05, h*0.69);
+  ctx.fillText('correcta."', w*0.05, h*0.76);
+}
+
+function drawGaleria(ctx, w, h, color) {
+  ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0,0,w,h);
+  ctx.fillStyle = color+'40';
+  ctx.fillRect(w*0.15, h*0.03, w*0.70, h*0.45);
+  ctx.fillRect(w*0.15, h*0.52, w*0.70, h*0.45);
+  ctx.fillStyle = color+'20';
+  ctx.fillRect(w*0.15, h*0.03, w*0.70, h*0.45);
+  ctx.fillStyle = '#AAA'; ctx.font = `${w*0.008}px sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText('[RENDER — DETALLE O ESPACIO SECUNDARIO]', w/2, h*0.26);
+  ctx.fillText('[RENDER — VISTA COMPLEMENTARIA]', w/2, h*0.75);
+  ctx.textAlign = 'left';
+}
+
+function drawCierreProy(ctx, w, h) {
+  ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0,0,w,h);
+  ctx.fillStyle = '#F5EDE0'; ctx.fillRect(0,0,w*0.22,h*0.65);
+  ctx.fillStyle = '#1C1C1C'; ctx.font = `italic ${w*0.018}px serif`;
+  ctx.fillText('"El lujo verdadero', w*0.29, h*0.28);
+  ctx.fillText('no se anuncia.', w*0.29, h*0.36);
+  ctx.fillText('Se descubre despacio."', w*0.29, h*0.44);
+  ctx.fillStyle = '#E8E4E0';
+  ctx.fillRect(w*0.55, h*0.08, w*0.38, h*0.48);
+  ctx.fillStyle = '#AAA'; ctx.font = `${w*0.008}px sans-serif`;
+  ctx.textAlign='center';
+  ctx.fillText('[ELEMENTO TÉCNICO: PLANTA O SECCIÓN]', w*0.74, h*0.35);
+  ctx.textAlign='left';
+  ctx.fillStyle='#7A7370'; ctx.font=`italic ${w*0.008}px serif`;
+  ctx.fillText('El resultado es un interior contenido pero presente,', w*0.06, h*0.78);
+  ctx.fillText('donde el lujo no se anuncia sino que se siente.', w*0.06, h*0.84);
+}
+
+function drawCierre(ctx, w, h) {
+  ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0,0,w,h);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#1C1C1C'; ctx.font = `${w*0.028}px serif`;
+  ctx.fillText('Sebastián Aldaco Muñoz', w/2, h*0.38);
+  ctx.fillStyle = '#7A7370'; ctx.font = `${w*0.008}px sans-serif`;
+  ctx.fillText('ARQUITECTURA · INTERIORISMO', w/2, h*0.46);
+  ctx.fillStyle = '#C9B99A';
+  const lx = w/2-80;
+  ctx.fillRect(lx, h*0.52, 160, 0.5);
+  ctx.fillStyle = '#7A7370'; ctx.font = `${w*0.008}px sans-serif`;
+  ctx.fillText('aldaco@email.com', w/2, h*0.60);
+  ctx.fillText('Puerto Vallarta, Jalisco  ·  +52 (322) 000-0000', w/2, h*0.66);
+  ctx.fillStyle = '#BBBBBB'; ctx.font = `${w*0.022}px serif`;
+  ctx.fillText('2026', w/2, h*0.82);
+  ctx.textAlign = 'left';
+}
+
+function renderSlide(idx) {
+  const s = slides[idx];
+  const header = `
+    <div class="slide-header">
+      <span class="slide-number">Diapositiva ${s.num} / 18</span>
+      <span class="slide-type ${s.badgeClass}">${s.type}</span>
+    </div>`;
+  let canvas = `<canvas id="sc" style="width:100%;display:block"></canvas>`;
+  let specs = `<div class="section-label">Especificaciones técnicas</div><div class="spec-grid">`;
+  s.specs.forEach(([k,v]) => {
+    specs += `<div class="spec-item"><div class="spec-key">${k}</div><div class="spec-val">${v}</div></div>`;
+  });
+  specs += `</div>`;
+  let texts = '';
+  if(s.texts.length > 0) {
+    texts = `<div class="section-label">Textos listos para copiar</div>`;
+    s.texts.forEach(([role, content]) => {
+      texts += `<div class="copy-row" onclick="copyText(this,'${content.replace(/'/g,"\\'")}')">
+        <span class="copy-icon">¶</span>
+        <span class="copy-text"><em>${role}:</em> ${content}</span>
+        <span class="copy-hint">copiar</span>
+      </div>`;
+    });
+  }
+  let instruct = `<div class="section-label">Función narrativa</div>
+    <div class="instruction-block">${getNarrativa(idx)}</div>`;
+
+  document.getElementById('slide-display').innerHTML = `
+    <div class="slide-panel">
+      ${header}
+      <div class="slide-body">
+        <div class="slide-canvas">${canvas}</div>
+        ${specs}
+        ${instruct}
+        ${texts}
+      </div>
+    </div>`;
+
+  const cnv = document.getElementById('sc');
+  cnv.width = 630; cnv.height = 476;
+  const ctx = cnv.getContext('2d');
+  s.canvas(ctx, 630, 476);
+
+  document.querySelectorAll('.slide-dot').forEach((d,i) => d.classList.toggle('active', i===idx));
+  document.querySelector('.slide-counter').textContent = `${idx+1} / ${slides.length}`;
+  document.getElementById('btn-prev').disabled = idx === 0;
+  document.getElementById('btn-next').disabled = idx === slides.length-1;
+}
+
+function getNarrativa(i) {
+  const n = [
+    "Primera impresión. Un despacho de alto nivel decide si continúa en 3 segundos. La portada debe comprometer sin explicar.",
+    "Voz propia. No es un CV visual. Es una declaración de postura. Sin imagen porque la imagen sobra aquí: el texto es suficientemente fuerte.",
+    "Mapa de lectura. Da al lector control sin saturarlo. Una lista limpia comunica más que un grid de thumbnails.",
+    "Entrada al proyecto. La portada de proyecto recibe al lector en el espacio antes de explicarlo.",
+    "Argumento principal. Aquí se justifica la relevancia del proyecto: lugar, decisiones, materialidad.",
+    "Pausa visual. El portafolio respira. Sin texto. El render habla solo.",
+    "Rigor técnico. Demuestra capacidad constructiva sin renunciar al lenguaje conceptual.",
+    "Segunda entrada. Mismo sistema, nuevo proyecto. La coherencia formal construye identidad.",
+    "Segundo argumento. Igual que p.5, adaptado al lenguaje de Río Fuerte: austeridad refinada.",
+    "Detalles que confirman. Las páginas de galería validan la calidad de resolución del proyecto.",
+    "Cierre conceptual. Una frase y un elemento técnico: la idea y su manifestación en planta.",
+    "Tercera entrada. El sistema de portadas de proyecto mantiene coherencia visual.",
+    "Tercer argumento. Énfasis en el gesto del domo como decisión central.",
+    "Detalles Villas Altas. Confirman el nivel de resolución del proyecto.",
+    "Cuarta entrada. Del Canto como cierre de proyectos residenciales.",
+    "Cuarto argumento. Relación entre paisaje y contención volumétrica.",
+    "Detalles Del Canto. Materialidad exterior: piedra, madera, acero.",
+    "Silencio final. El portafolio termina sin ruido. Solo datos de contacto y el año.",
+  ];
+  return n[i] || '';
+}
+
+function changeSlide(dir) {
+  current = Math.max(0, Math.min(slides.length-1, current+dir));
+  renderSlide(current);
+}
+
+function setView(v, btn) {
+  document.querySelectorAll('.toolbar button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('view-slides').style.display = v==='slides'?'block':'none';
+  ['sistema','textos','curaduría'].forEach(id => {
+    const el = document.getElementById('view-'+id);
+    if(el) el.classList.toggle('visible', v===id);
+  });
+}
+
+function copyText(el, text) {
+  navigator.clipboard.writeText(text).catch(()=>{});
+  const hint = el.querySelector('.copy-hint');
+  if(hint) { hint.textContent = '✓'; setTimeout(()=>hint.textContent='copiar', 1500); }
+}
+
+const nav = document.getElementById('dot-nav');
+slides.forEach((s, i) => {
+  const d = document.createElement('div');
+  d.className = 'slide-dot';
+  d.title = s.name;
+  d.onclick = () => { current=i; renderSlide(i); };
+  nav.appendChild(d);
+});
+const counter = document.createElement('span');
+counter.className = 'slide-counter';
+nav.appendChild(counter);
+
+renderSlide(0);
+</script>
